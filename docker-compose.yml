@@ -1,0 +1,80 @@
+# Полный стенд одной командой: docker compose up --build
+#   http://localhost:3000       — веб-интерфейс (клиент и рабочее место банка)
+#   http://localhost:8080/api/docs — Swagger UI
+#   http://localhost:8090       — симулятор ЕГРЮЛ/ЕГРИП, ФНС, БКИ
+name: credit-conveyor
+
+x-conveyor-env: &conveyor-env
+  DATABASE_URL: postgres://conveyor:conveyor@postgres:5432/conveyor?sslmode=disable
+  SOURCES_URL: http://mockgov:8090
+  MOCK_ADMIN_URL: http://mockgov:8090
+  JWT_SECRET: ${JWT_SECRET:-change-me-local-demo-secret-at-least-32-bytes}
+  DEMO_MODE: ${DEMO_MODE:-true}
+  PIPELINE_STEP_DELAY: ${PIPELINE_STEP_DELAY:-2s}
+  CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+  LOG_LEVEL: info
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: conveyor
+      POSTGRES_USER: conveyor
+      POSTGRES_PASSWORD: conveyor
+    ports: ["5433:5432"]   # для локальной разработки без Docker; 5433 — чтобы не конфликтовать с локальным Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U conveyor -d conveyor"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  mockgov:
+    build: { context: ./backend, target: mockgov }
+    environment:
+      PORT: "8090"
+      MOCK_LATENCY_MS: ${MOCK_LATENCY_MS:-700}
+      MOCK_FAILURE_RATE: ${MOCK_FAILURE_RATE:-0}
+    ports: ["8090:8090"]
+    restart: unless-stopped
+
+  api:
+    build: { context: ./backend, target: conveyor }
+    command: ["api"]
+    environment:
+      <<: *conveyor-env
+      AUTO_MIGRATE: "true"
+      AUTO_SEED: "true"
+    ports: ["8080:8080"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      mockgov: { condition: service_healthy }
+    restart: unless-stopped
+
+  # Воркеры конвейера масштабируются горизонтально: задачи разбираются через
+  # SELECT ... FOR UPDATE SKIP LOCKED, поэтому два экземпляра не возьмут одну задачу.
+  worker:
+    build: { context: ./backend, target: conveyor }
+    command: ["worker"]
+    environment:
+      <<: *conveyor-env
+      AUTO_MIGRATE: "false"
+      WORKER_CONCURRENCY: "4"
+    healthcheck: { disable: true }
+    deploy:
+      replicas: 2
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports: ["3000:80"]
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  pgdata:
