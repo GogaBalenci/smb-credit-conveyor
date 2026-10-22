@@ -1,0 +1,162 @@
+[
+  {
+    "persona": "Одобрение: зрелая IT-компания с чистой кредитной историей",
+    "inn": "7701234560",
+    "ogrn": "1197746123456",
+    "full_name": "Общество с ограниченной ответственностью «Северный ветер»",
+    "short_name": "ООО «Северный ветер»",
+    "status": "ACTIVE",
+    "registered_months_ago": 91,
+    "okved": "62.01",
+    "okved_name": "Разработка компьютерного программного обеспечения",
+    "region": "Москва",
+    "address": "г. Москва, ул. Лесная, д. 7, офис 412",
+    "director": "Орлов Дмитрий Андреевич",
+    "fns": {
+      "employees": 38, "tax_regime": "ОСН",
+      "reports": [
+        {"years_ago": 1, "revenue": 64000000, "net_profit": 8100000},
+        {"years_ago": 2, "revenue": 52000000, "net_profit": 6300000}
+      ],
+      "tax_arrears": 0, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {
+      "found": true, "inquiries_30d": 1,
+      "loans": [
+        {"lender": "Банк А", "kind": "Оборотный кредит", "amount": 5000000, "outstanding": 1900000, "monthly_payment": 120000, "opened_at": "2025-02-10", "max_overdue_days": 0, "status": "ACTIVE"},
+        {"lender": "Банк Б", "kind": "Овердрафт", "amount": 2000000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2022-04-01", "closed_at": "2023-04-01", "max_overdue_days": 0, "status": "CLOSED"},
+        {"lender": "Банк А", "kind": "Оборотный кредит", "amount": 3000000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2021-06-15", "closed_at": "2023-06-15", "max_overdue_days": 0, "status": "CLOSED"},
+        {"lender": "Лизинговая компания", "kind": "Лизинг", "amount": 1200000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2020-09-01", "closed_at": "2022-09-01", "max_overdue_days": 0, "status": "CLOSED"}
+      ]
+    }
+  },
+  {
+    "persona": "Контрпредложение: ИП в рознице, платёж на коротком сроке слишком высок",
+    "inn": "165987654329",
+    "ogrn": "323169000012345",
+    "full_name": "Индивидуальный предприниматель Кузнецова Анна Сергеевна",
+    "short_name": "ИП Кузнецова А. С.",
+    "status": "ACTIVE",
+    "registered_months_ago": 41,
+    "okved": "47.71",
+    "okved_name": "Торговля розничная одеждой в специализированных магазинах",
+    "region": "Республика Татарстан",
+    "address": "г. Казань, ул. Баумана, д. 44",
+    "director": "Кузнецова Анна Сергеевна",
+    "fns": {
+      "employees": 6, "tax_regime": "УСН",
+      "reports": [
+        {"years_ago": 1, "revenue": 14400000, "net_profit": 1100000},
+        {"years_ago": 2, "revenue": 12000000, "net_profit": 950000}
+      ],
+      "tax_arrears": 0, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {
+      "found": true, "inquiries_30d": 2,
+      "loans": [
+        {"lender": "Банк В", "kind": "Кредит на развитие", "amount": 2000000, "outstanding": 900000, "monthly_payment": 80000, "opened_at": "2025-01-20", "max_overdue_days": 0, "status": "ACTIVE"},
+        {"lender": "Банк В", "kind": "Экспресс-кредит", "amount": 500000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2023-11-01", "closed_at": "2024-11-01", "max_overdue_days": 0, "status": "CLOSED"}
+      ]
+    }
+  },
+  {
+    "persona": "Отказ: стоп-фактор — просрочка более 90 дней",
+    "inn": "7802345676",
+    "ogrn": "1207800123456",
+    "full_name": "Общество с ограниченной ответственностью «СтройМонтаж»",
+    "short_name": "ООО «СтройМонтаж»",
+    "status": "ACTIVE",
+    "registered_months_ago": 52,
+    "okved": "43.21",
+    "okved_name": "Производство электромонтажных работ",
+    "region": "Санкт-Петербург",
+    "address": "г. Санкт-Петербург, Выборгское ш., д. 15, лит. А",
+    "director": "Грачёв Сергей Викторович",
+    "fns": {
+      "employees": 22, "tax_regime": "ОСН",
+      "reports": [
+        {"years_ago": 1, "revenue": 40000000, "net_profit": -1200000},
+        {"years_ago": 2, "revenue": 58000000, "net_profit": 2100000}
+      ],
+      "tax_arrears": 340000, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {
+      "found": true, "inquiries_30d": 6,
+      "loans": [
+        {"lender": "Банк Г", "kind": "Оборотный кредит", "amount": 6000000, "outstanding": 4100000, "monthly_payment": 310000, "opened_at": "2024-03-01", "max_overdue_days": 124, "status": "ACTIVE"}
+      ]
+    }
+  },
+  {
+    "persona": "Дозапрос документов → ручное рассмотрение: молодая пекарня, пограничный риск",
+    "inn": "5403456780",
+    "ogrn": "1255400012345",
+    "full_name": "Общество с ограниченной ответственностью «Хлебный дом»",
+    "short_name": "ООО «Хлебный дом»",
+    "status": "ACTIVE",
+    "registered_months_ago": 10,
+    "okved": "56.10",
+    "okved_name": "Деятельность ресторанов и услуги по доставке продуктов питания",
+    "region": "Новосибирская область",
+    "address": "г. Новосибирск, Красный пр-т, д. 86",
+    "director": "Белова Мария Игоревна",
+    "fns": {
+      "employees": 9, "tax_regime": "УСН",
+      "reports": [
+        {"years_ago": 1, "revenue": 9600000, "net_profit": 580000}
+      ],
+      "tax_arrears": 0, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {"found": false, "inquiries_30d": 2, "loans": []}
+  },
+  {
+    "persona": "Крупная сумма: дозапрос отчётности, затем ручное решение (выше лимита автоодобрения)",
+    "inn": "6164567897",
+    "ogrn": "1186196012345",
+    "full_name": "Общество с ограниченной ответственностью «Агро-Логистик»",
+    "short_name": "ООО «Агро-Логистик»",
+    "status": "ACTIVE",
+    "registered_months_ago": 66,
+    "okved": "49.41",
+    "okved_name": "Деятельность автомобильного грузового транспорта",
+    "region": "Ростовская область",
+    "address": "г. Ростов-на-Дону, ул. Портовая, д. 193",
+    "director": "Ткаченко Игорь Петрович",
+    "fns": {
+      "employees": 74, "tax_regime": "ОСН",
+      "reports": [
+        {"years_ago": 1, "revenue": 180000000, "net_profit": 14500000},
+        {"years_ago": 2, "revenue": 165000000, "net_profit": 12100000}
+      ],
+      "tax_arrears": 0, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {
+      "found": true, "inquiries_30d": 1,
+      "loans": [
+        {"lender": "Лизинговая компания", "kind": "Лизинг", "amount": 24000000, "outstanding": 11000000, "monthly_payment": 690000, "opened_at": "2024-05-15", "max_overdue_days": 0, "status": "ACTIVE"},
+        {"lender": "Банк А", "kind": "Оборотный кредит", "amount": 10000000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2021-03-01", "closed_at": "2023-03-01", "max_overdue_days": 0, "status": "CLOSED"},
+        {"lender": "Банк Д", "kind": "Кредитная линия", "amount": 15000000, "outstanding": 0, "monthly_payment": 0, "opened_at": "2022-08-01", "closed_at": "2024-08-01", "max_overdue_days": 3, "status": "CLOSED"}
+      ]
+    }
+  },
+  {
+    "persona": "Стоп-фактор реестра: компания в процессе ликвидации",
+    "inn": "770123456703",
+    "ogrn": "319774600123456",
+    "full_name": "Индивидуальный предприниматель Соколов Павел Олегович",
+    "short_name": "ИП Соколов П. О.",
+    "status": "LIQUIDATED",
+    "registered_months_ago": 30,
+    "okved": "73.11",
+    "okved_name": "Деятельность рекламных агентств",
+    "region": "Москва",
+    "address": "г. Москва, Ленинский пр-т, д. 30",
+    "director": "Соколов Павел Олегович",
+    "fns": {
+      "employees": 1, "tax_regime": "НПД",
+      "reports": [{"years_ago": 1, "revenue": 2400000, "net_profit": 900000}],
+      "tax_arrears": 0, "mass_address": false, "disqualified_director": false, "bankruptcy": false
+    },
+    "bki": {"found": false, "inquiries_30d": 0, "loans": []}
+  }
+]
