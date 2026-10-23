@@ -327,3 +327,11 @@ pre.json { background: var(--page); padding: 12px; border-radius: var(--r-sm); o
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading { display: flex; gap: 10px; align-items: center; color: var(--ink-3); padding: 24px 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* Сводка досье */
+.summary { margin: 0; display: grid; gap: 10px; }
+.summary > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; font-size: 14px; }
+.summary dt { color: var(--ink-3); }
+.summary dd { margin: 0; }
+@media (max-width: 640px) { .summary > div { grid-template-columns: 1fr; gap: 2px; } }
+.ai-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--steel); background: var(--steel-wash); vertical-align: 1px; }

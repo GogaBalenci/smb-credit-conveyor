@@ -236,6 +236,31 @@ func TestHTTP_AuthAndErrors(t *testing.T) {
 	}
 }
 
+func TestHTTP_SummaryForUnderwriterOnly(t *testing.T) {
+	env, srv := setup(t)
+	c := loginAs(t, srv.URL, "review@demo.ru")
+	_, pre := c.do("GET", "/api/v1/prefill", nil)
+	_, app := c.do("POST", "/api/v1/applications", map[string]any{"product_code": "EXPRESS", "purpose": "cash_gap", "amount": 1000000, "term_months": 24, "financials": pre["financials"]})
+	id := app["id"].(string)
+	c.do("POST", "/api/v1/applications/"+id+"/submit", nil)
+	env.Drain(t)
+
+	if resp, _ := c.do("GET", "/api/v1/applications/"+id+"/summary", nil); resp.StatusCode != 403 {
+		t.Fatalf("client must not get underwriter summary, got %d", resp.StatusCode)
+	}
+	uw := loginAs(t, srv.URL, "underwriter@demo.ru")
+	resp, sum := uw.do("GET", "/api/v1/applications/"+id+"/summary", nil)
+	if resp.StatusCode != 200 || sum["source"] != "template" {
+		t.Fatalf("summary: %d %v", resp.StatusCode, sum)
+	}
+	text, _ := sum["text"].(string)
+	for _, want := range []string{"Профиль: ООО «Хлебный дом»", "Что проверить:"} {
+		if !strings.Contains(text, want) {
+			t.Errorf("summary misses %q:\n%s", want, text)
+		}
+	}
+}
+
 func TestHTTP_CORSAndOps(t *testing.T) {
 	_, srv := setup(t)
 	req, _ := http.NewRequest("OPTIONS", srv.URL+"/api/v1/applications", nil)

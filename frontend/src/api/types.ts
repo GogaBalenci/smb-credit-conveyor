@@ -123,3 +123,8 @@ export interface Stats {
   avg_auto_decision_sec: number; avg_manual_decision_sec: number
   queue: { pending: number; failed: number; retrying: number }; automation_rate: number
 }
+
+/** Сводка досье для кредитного эксперта. */
+export interface DossierSummary {
+  text: string; source: 'llm' | 'template'; model?: string; model_sections?: string[]; warning?: string; generated_at: string; duration_ms: number
+}

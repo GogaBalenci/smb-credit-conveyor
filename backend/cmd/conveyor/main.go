@@ -24,6 +24,7 @@ import (
 	"syscall"
 	"time"
 
+	"alfahack/backend/internal/assistant"
 	"alfahack/backend/internal/auth"
 	"alfahack/backend/internal/httpapi"
 	"alfahack/backend/internal/integrations"
@@ -46,6 +47,8 @@ type config struct {
 	StepDelay    time.Duration
 	Workers      int
 	LogLevel     string
+	LLMURL       string
+	LLMModel     string
 }
 
 func loadConfig() config {
@@ -64,6 +67,8 @@ func loadConfig() config {
 		StepDelay:    envDuration("PIPELINE_STEP_DELAY", 2*time.Second),
 		Workers:      envInt("WORKER_CONCURRENCY", 4),
 		LogLevel:     env("LOG_LEVEL", "info"),
+		LLMURL:       env("LLM_URL", ""),
+		LLMModel:     env("LLM_MODEL", "qwen2.5:1.5b-instruct"),
 	}
 }
 
@@ -114,6 +119,10 @@ func run(cmd string, cfg config, log *slog.Logger) error {
 	svcCfg.StepDelay = cfg.StepDelay
 	svcCfg.DemoSignCode = cfg.DemoMode
 	svc := service.New(st, src, tokens, svcCfg, log)
+	if cfg.LLMURL != "" {
+		svc.SetSummarizer(assistant.NewOllama(cfg.LLMURL, cfg.LLMModel, log))
+		log.Info("assistant: local LLM enabled", "url", cfg.LLMURL, "model", cfg.LLMModel)
+	}
 
 	if cfg.AutoMigrate || cmd == "migrate" {
 		if err := st.Migrate(ctx); err != nil {
@@ -143,7 +152,7 @@ func run(cmd string, cfg config, log *slog.Logger) error {
 			}, log).Handler(),
 			ReadHeaderTimeout: 5 * time.Second,
 			ReadTimeout:       30 * time.Second,
-			WriteTimeout:      30 * time.Second,
+			WriteTimeout:      60 * time.Second, // сводка локальной моделью на CPU может занять до 45 с
 			IdleTimeout:       120 * time.Second,
 		}
 		wg.Add(1)

@@ -1,5 +1,5 @@
 import type {
-  Application, ApplicationDetails, ApplicationInput, Company, DocKind, Document, Feed, Meta,
+  Application, ApplicationDetails, ApplicationInput, Company, DocKind, Document, DossierSummary, Feed, Meta,
   Prefill, Recommendation, Session, Stats, Status, User,
 } from './types'
 
@@ -104,6 +104,7 @@ export const api = {
   take: (id: string) => request<Application>('POST', `/applications/${id}/take`),
   decide: (id: string, d: { action: 'approve' | 'reject' | 'request_info'; amount?: number; term_months?: number; rate?: number; comment: string; documents?: DocKind[] }) =>
     request<Application>('POST', `/applications/${id}/decision`, d, { idempotent: true }),
+  summary: (id: string, refresh = false) => request<DossierSummary>('GET', `/applications/${id}/summary${refresh ? '?refresh=1' : ''}`),
   stats: () => request<Stats>('GET', '/stats'),
   faults: () => request<{ failure_rate: number; latency_ms: number }>('GET', '/admin/faults'),
   setFaults: (f: { failure_rate?: number; latency_ms?: number }) => request<{ failure_rate: number; latency_ms: number }>('POST', '/admin/faults', f),

@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"time"
 
+	"alfahack/backend/internal/assistant"
 	"alfahack/backend/internal/auth"
 	"alfahack/backend/internal/domain"
 	"alfahack/backend/internal/integrations"
@@ -40,6 +41,9 @@ type Service struct {
 	cfg    Config
 	log    *slog.Logger
 	now    func() time.Time
+
+	summarizer assistant.Summarizer
+	summaries  summaryCache
 }
 
 // New создаёт сервис.
@@ -47,7 +51,7 @@ func New(st *store.Store, src integrations.Source, tokens *auth.Issuer, cfg Conf
 	if log == nil {
 		log = slog.Default()
 	}
-	return &Service{store: st, src: src, tokens: tokens, cfg: cfg, log: log, now: time.Now}
+	return &Service{store: st, src: src, tokens: tokens, cfg: cfg, log: log, now: time.Now, summarizer: assistant.Template{}}
 }
 
 // Задачи конвейера.

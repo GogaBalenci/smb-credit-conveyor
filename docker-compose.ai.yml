@@ -1,0 +1,41 @@
+# Опционально: ИИ-сводка досье для кредитного эксперта на локальной модели с открытыми весами.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.ai.yml up --build -d
+#
+# Модель: Qwen2.5 1.5B Instruct (Apache-2.0), ~1 ГБ, работает на CPU через Ollama.
+# Первый запуск скачивает модель (несколько минут). Пока модель не готова или если
+# она недоступна, сервис показывает шаблонную сводку — основной сценарий не зависит от ИИ.
+# Нужно ~4 ГБ свободной памяти для Docker.
+
+services:
+  ollama:
+    image: ollama/ollama:0.6.8
+    environment:
+      OLLAMA_KEEP_ALIVE: 24h   # держать модель в памяти, чтобы сводка не ждала загрузки
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  # Однократно скачивает модель и прогревает её.
+  ollama-pull:
+    image: ollama/ollama:0.6.8
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["ollama pull ${LLM_MODEL:-qwen2.5:1.5b-instruct} && ollama run ${LLM_MODEL:-qwen2.5:1.5b-instruct} 'Ответь одним словом: готово'"]
+    depends_on:
+      ollama: { condition: service_healthy }
+    restart: "no"
+
+  api:
+    environment:
+      LLM_URL: http://ollama:11434
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:1.5b-instruct}
+
+volumes:
+  ollama:

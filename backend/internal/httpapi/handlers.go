@@ -330,6 +330,17 @@ func (s *Server) decision(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, app)
 }
 
+// summary — сводка досье для эксперта (модель с открытыми весами или шаблон).
+func (s *Server) summary(w http.ResponseWriter, r *http.Request) {
+	p, _ := principal(r.Context())
+	sum, err := s.svc.Summary(r.Context(), p, r.PathValue("id"), r.URL.Query().Get("refresh") == "1")
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	writeJSON(w, 200, sum)
+}
+
 func (s *Server) stats(w http.ResponseWriter, r *http.Request) {
 	p, _ := principal(r.Context())
 	st, err := s.svc.GetStats(r.Context(), p)

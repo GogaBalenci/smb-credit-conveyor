@@ -98,6 +98,7 @@ func (s *Server) Handler() http.Handler {
 	// Рабочее место банка
 	mux.HandleFunc("POST /api/v1/applications/{id}/take", a(s.take))
 	mux.HandleFunc("POST /api/v1/applications/{id}/decision", a(s.idempotent(s.decision)))
+	mux.HandleFunc("GET /api/v1/applications/{id}/summary", a(s.summary))
 	mux.HandleFunc("GET /api/v1/stats", a(s.stats))
 	mux.HandleFunc("GET /api/v1/admin/faults", a(s.faults))
 	mux.HandleFunc("POST /api/v1/admin/faults", a(s.faults))

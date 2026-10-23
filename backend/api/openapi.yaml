@@ -355,6 +355,33 @@ paths:
         '403': { $ref: '#/components/responses/Error' }
         '409': { $ref: '#/components/responses/Error' }
         '422': { $ref: '#/components/responses/Validation' }
+  /api/v1/applications/{id}/summary:
+    get:
+      tags: [underwriter]
+      summary: Сводка досье для эксперта (локальная модель с открытыми весами или шаблон)
+      description: |
+        Модель пересказывает только факты заявки и не даёт рекомендаций. Ответ с суммами, которых нет в фактах,
+        отбрасывается — возвращается шаблонная сводка с полем warning. Результат кэшируется по версии заявки.
+      parameters:
+        - { $ref: '#/components/parameters/AppId' }
+        - { name: refresh, in: query, schema: { type: string, enum: ['1'] }, description: Составить заново }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text: { type: string, description: 'Строки «Метка: текст» через \n' }
+                  source: { type: string, enum: [llm, template] }
+                  model: { type: string, example: 'qwen2.5:1.5b-instruct' }
+                  model_sections: { type: array, items: { type: string }, description: 'Секции, сформулированные моделью' }
+                  warning: { type: string }
+                  generated_at: { type: string, format: date-time }
+                  duration_ms: { type: integer }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
   /api/v1/stats:
     get:
       tags: [underwriter]

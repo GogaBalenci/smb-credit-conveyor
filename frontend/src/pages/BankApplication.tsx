@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api, ApiError, downloadDocument } from '../api/client'
-import type { ApplicationDetails, DocKind, ScoreResult } from '../api/types'
+import type { ApplicationDetails, DocKind, DossierSummary, ScoreResult } from '../api/types'
 import { useSession } from '../session'
 import { Conveyor } from '../components/Conveyor'
 import { ErrorBox, Field, MoneyInput, Spinner, StatusBadge, useAsync, usePolling } from '../components/ui'
@@ -50,6 +50,7 @@ export function BankApplication() {
               {d.pipeline.technical_error && <pre className="json" style={{ marginTop: 8, marginBottom: 0 }}>{d.pipeline.technical_error}</pre>}
             </div>
           )}
+          {a.status !== 'DRAFT' && <SummaryPanel appId={a.id} version={a.version} />}
           {a.status === 'MANUAL_REVIEW' && <DecisionForm d={d} onDone={() => q.reload(true)} />}
           {a.decision && a.status !== 'MANUAL_REVIEW' && (
             <section className="panel stack">
@@ -129,6 +130,62 @@ export function BankApplication() {
         </aside>
       </div>
     </main>
+  )
+}
+
+/** Сводка досье: локальная модель с открытыми весами пересказывает эксперту факты заявки. */
+function SummaryPanel({ appId, version }: { appId: string; version: number }) {
+  const [sum, setSum] = useState<DossierSummary | null>(null)
+  const [error, setError] = useState<unknown>()
+  const [busy, setBusy] = useState(false)
+  useEffect(() => { setSum(null) }, [appId, version])
+
+  async function load(refresh: boolean) {
+    setBusy(true)
+    setError(undefined)
+    try { setSum(await api.summary(appId, refresh)) } catch (e) { setError(e) } finally { setBusy(false) }
+  }
+
+  return (
+    <section className="panel stack" aria-labelledby="sum-h" aria-busy={busy}>
+      <div className="panel-head" style={{ marginBottom: 0 }}>
+        <h2 id="sum-h">Сводка досье</h2>
+        {sum && !busy && <button className="btn btn-ghost btn-sm" onClick={() => load(true)}>Составить заново</button>}
+      </div>
+      {!sum && !busy && (
+        <div className="row">
+          <button className="btn btn-secondary" onClick={() => load(false)}>Составить сводку</button>
+          <span className="small muted">Коротко: профиль, сильные стороны, риски и что проверить</span>
+        </div>
+      )}
+      {busy && <Spinner label="Модель изучает досье — это может занять до минуты…" />}
+      <ErrorBox error={error} />
+      {sum && !busy && (
+        <>
+          {sum.warning && <div className="alert alert-warn">{sum.warning}</div>}
+          <dl className="summary">
+            {sum.text.split('\n').map((line, i) => {
+              const at = line.indexOf(':')
+              if (at <= 0 || at >= 30) return <div key={i}><dd>{line}</dd></div>
+              const label = line.slice(0, at)
+              const byModel = sum.model_sections?.includes(label)
+              return (
+                <div key={i}>
+                  <dt>{label}{byModel && <span className="ai-tag" title="Сформулировано моделью, сверено с факторами скоринга">ИИ</span>}</dt>
+                  <dd>{line.slice(at + 1).trim()}</dd>
+                </div>
+              )
+            })}
+          </dl>
+          <p className="small muted">
+            {sum.source === 'llm'
+              ? `Факты — из данных заявки. Строки с пометкой «ИИ» сформулировала локальная модель ${sum.model} (открытые веса) за ${(sum.duration_ms / 1000).toFixed(1)} с; каждое утверждение сверено с факторами скоринга.`
+              : 'Составлено по правилам из данных заявки.'}
+            {' '}Решение принимает эксперт.
+          </p>
+        </>
+      )}
+    </section>
   )
 }
 

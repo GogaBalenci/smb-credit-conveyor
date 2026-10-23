@@ -1,4 +1,4 @@
-.PHONY: up down logs test test-unit test-integration test-frontend lint build fmt
+.PHONY: up up-ai down logs test test-unit test-integration test-frontend lint build fmt
 
 TEST_DB ?= postgres://conveyor:conveyor@localhost:55432/conveyor_test?sslmode=disable
 
@@ -7,8 +7,13 @@ up:
 	docker compose up --build -d
 	@echo "Веб: http://localhost:3000   Swagger: http://localhost:8080/api/docs"
 
+## Стенд с ИИ-сводкой на локальной модели (Ollama + Qwen2.5 1.5B)
+up-ai:
+	docker compose -f docker-compose.yml -f docker-compose.ai.yml up --build -d
+	@echo "Модель скачивается в фоне: docker compose -f docker-compose.yml -f docker-compose.ai.yml logs -f ollama-pull"
+
 down:
-	docker compose down
+	docker compose -f docker-compose.yml -f docker-compose.ai.yml down
 
 logs:
 	docker compose logs -f api worker
