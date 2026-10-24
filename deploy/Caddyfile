@@ -1,0 +1,6 @@
+# SITE_ADDRESS=:80            — доступ по IP, без HTTPS
+# SITE_ADDRESS=alfa.example.ru — HTTPS с автоматическим сертификатом Let's Encrypt
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	reverse_proxy web:80
+}

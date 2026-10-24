@@ -1,0 +1,37 @@
+# Стенд на сервере: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Наружу открыт только Caddy (80/443). Он раздаёт приложение и сам получает
+# сертификат Let's Encrypt, если в SITE_ADDRESS указан домен. Остальные сервисы
+# доступны лишь внутри сети compose.
+
+x-prod-secret: &prod-secret
+  JWT_SECRET: ${JWT_SECRET:?задайте JWT_SECRET в .env (openssl rand -hex 32)}
+
+services:
+  postgres:
+    ports: !reset []
+  mockgov:
+    ports: !reset []
+  api:
+    ports: !reset []
+    environment: *prod-secret
+  worker:
+    environment: *prod-secret
+  web:
+    ports: !reset []
+
+  caddy:
+    image: caddy:2.8-alpine
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web: { condition: service_started }
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

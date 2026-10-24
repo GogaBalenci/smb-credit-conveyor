@@ -163,7 +163,7 @@ api/postman_collection.json  коллекция запросов (Postman / Brun
 | `WORKER_CONCURRENCY` | `4` | Параллельных обработчиков в одном воркере |
 | `AUTO_MIGRATE`, `AUTO_SEED` | `true` | Миграции и демо-данные при старте |
 | `CORS_ORIGINS` | `http://localhost:5173` | Разрешённые origin через запятую |
-| `STATIC_DIR` | — | Раздавать собранный фронтенд самим API (режим «всё в одном») |
+| `STATIC_DIR` | — | Раздавать собранный фронтенд самим API (режим `all`, удобно при разработке) |
 | `LLM_URL`, `LLM_MODEL` | —, `qwen2.5:1.5b-instruct` | Адрес Ollama и модель для сводки досье; без `LLM_URL` — шаблонная сводка |
 | `PORT`, `LOG_LEVEL` | `8080`, `info` | Порт и уровень логов |
 
@@ -208,12 +208,23 @@ REST, JSON, `Authorization: Bearer <token>`. Спецификация — `backe
 - `If-Match: "<version>"` при изменении заявки, иначе `409 version_conflict`.
 - `X-Request-ID` в каждом ответе, в логах и во внешних вызовах.
 
-## Деплой на бесплатный хостинг
+## Развёртывание на сервере
 
-Корневой `Dockerfile` собирает образ «всё в одном» (SPA + API + воркер). Нужны:
-1. PostgreSQL — например, бесплатный инстанс Neon или Supabase → `DATABASE_URL`.
-2. Второй сервис из того же репозитория: `backend/Dockerfile`, target `mockgov` → его адрес в `SOURCES_URL` и `MOCK_ADMIN_URL`.
-3. Основной сервис из корневого `Dockerfile` с `JWT_SECRET`, `DATABASE_URL`, `SOURCES_URL`.
+Подойдёт любая VM с Ubuntu 22.04/24.04 или Debian 12: от 2 vCPU, 2 ГБ RAM (с ИИ-сводкой — 4 ГБ), 20 ГБ диска,
+публичный IP. Зайдите по SSH под root и выполните:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/GogaBalenci/smb-credit-conveyor/main/deploy/setup.sh | bash
+```
+
+Скрипт ставит Docker, клонирует репозиторий в `/opt/credit-conveyor`, генерирует `JWT_SECRET` и поднимает стенд
+с [`docker-compose.prod.yml`](docker-compose.prod.yml). Наружу открыт только Caddy (порты 80/443), база, API
+и симулятор доступны лишь внутри сети compose.
+
+- **С доменом и HTTPS:** направьте A-запись домена на IP сервера и запустите с `SITE_ADDRESS=alfa.example.ru`
+  (перед `bash`). Caddy сам получит сертификат Let's Encrypt.
+- **С ИИ-сводкой:** добавьте `WITH_AI=true`.
+- **Обновление:** запустите скрипт ещё раз — он подтянет код и пересоберёт образы, данные сохранятся.
 
 ## Допущения и ограничения
 
