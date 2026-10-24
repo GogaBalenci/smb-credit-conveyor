@@ -74,7 +74,7 @@ export function ApplyWizard() {
       <ol className="steps" aria-label="Шаги">
         {STEPS.map((s, i) => (
           <li key={s} className={i === step ? 'active' : i < step ? 'done' : ''} aria-current={i === step ? 'step' : undefined}>
-            <b>{i < step ? '✓' : i + 1}</b>{s}
+            <b>{i < step ? '✓' : i + 1}</b><span className="step-label">{s}</span>
           </li>
         ))}
       </ol>

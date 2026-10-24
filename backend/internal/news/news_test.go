@@ -89,12 +89,16 @@ func TestStageOf_CoversAllStatuses(t *testing.T) {
 }
 
 func TestEventItemsAndMerge(t *testing.T) {
-	events := []domain.Event{
-		{ID: 3, ApplicationID: "a1", To: domain.StatusApproved, ActorKind: domain.ActorSystem, CreatedAt: now},
-		{ID: 2, ApplicationID: "a1", To: domain.StatusSubmitted, ActorKind: domain.ActorClient, CreatedAt: now},
+	events := []domain.Event{ // от новых к старым, как отдаёт хранилище
+		{ID: 5, ApplicationID: "a1", From: domain.StatusApproved, To: domain.StatusSigned, ActorKind: domain.ActorClient, CreatedAt: now},
+		{ID: 4, ApplicationID: "a1", From: domain.StatusScoring, To: domain.StatusApproved, ActorKind: domain.ActorSystem, CreatedAt: now},
+		{ID: 3, ApplicationID: "a1", From: domain.StatusChecking, To: domain.StatusScoring, ActorKind: domain.ActorSystem, CreatedAt: now},
+		{ID: 2, ApplicationID: "a2", From: domain.StatusChecking, To: domain.StatusNeedsInfo, ActorKind: domain.ActorSystem, CreatedAt: now},
+		{ID: 1, ApplicationID: "a2", From: domain.StatusDraft, To: domain.StatusSubmitted, ActorKind: domain.ActorClient, CreatedAt: now},
 	}
-	ev := EventItems(events, map[string]string{"a1": "КЗ-2026-1001"})
-	if len(ev) != 1 || ev[0].Title != "Заявка КЗ-2026-1001: одобрено" {
+	ev := EventItems(events, map[string]string{"a1": "КЗ-2026-1001", "a2": "КЗ-2026-1002"})
+	// По одной карточке на заявку, самое свежее важное событие; промежуточные шаги не попадают.
+	if len(ev) != 2 || ev[0].Title != "Заявка КЗ-2026-1001: договор подписан" || ev[1].Title != "Заявка КЗ-2026-1002: нужны дополнительные данные" {
 		t.Fatalf("unexpected event items %+v", ev)
 	}
 	merged := Merge(ev, Rank(seed(t), Profile{Stage: StageOffer}, now), 3, 5)

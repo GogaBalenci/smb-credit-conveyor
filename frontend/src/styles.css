@@ -69,13 +69,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .who span { font-size: 12px; color: var(--ink-3); }
 .who b, .who span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
 @media (max-width: 900px) { .topbar-inner { gap: 12px; padding: 0 16px; } .who { display: none; } }
-@media (max-width: 520px) { .brand-text { display: none; } }
+@media (max-width: 640px) {
+  .topbar-inner { gap: 4px; padding: 0 12px; height: 56px; }
+  .brand-text { display: none; }
+  .nav a { padding: 8px 10px; font-size: 14px; }
+  .topbar .btn-ghost { padding: 0 8px; }
+  .page { padding: 24px 16px 48px; }
+  .panel { padding: 18px 16px; }
+  h1 { font-size: 22px; }
+}
 
 .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px 64px; }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
 .page-head p { color: var(--ink-2); margin-top: 6px; }
 .grid-main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
-@media (max-width: 960px) { .grid-main { grid-template-columns: 1fr; } }
+@media (max-width: 960px) { .grid-main { grid-template-columns: minmax(0, 1fr); } }
 
 .panel { background: var(--paper); border-radius: var(--r-md); border: 1px solid var(--line-2); padding: 24px; }
 .panel + .panel { margin-top: 16px; }
@@ -335,3 +343,22 @@ pre.json { background: var(--page); padding: 12px; border-radius: var(--r-sm); o
 .summary dd { margin: 0; }
 @media (max-width: 640px) { .summary > div { grid-template-columns: 1fr; gap: 2px; } }
 .ai-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--steel); background: var(--steel-wash); vertical-align: 1px; }
+
+/* Телефон: длинные значения переносятся, сравнение условий — в одну колонку */
+.kv dd, .summary dd, .check-row div { overflow-wrap: anywhere; }
+@media (max-width: 560px) {
+  .compare { grid-template-columns: 1fr; }
+  .kv { grid-template-columns: 1fr; gap: 2px 0; }
+  .kv dt { margin-top: 8px; }
+  .factor { grid-template-columns: minmax(0, 1fr) 72px 40px; }
+  .drop { grid-template-columns: 1fr; }
+  .page-head { align-items: flex-start; }
+  /* Мастер: на телефоне подписан только текущий шаг */
+  .steps { flex-wrap: nowrap; }
+  .steps li:not(.active) .step-label { display: none; }
+  .steps li + li::before { width: 16px; }
+  /* Вкладки — одной строкой с прокруткой */
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .tabs button { white-space: nowrap; }
+  .panel-head { flex-wrap: wrap; }
+}

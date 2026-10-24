@@ -21,7 +21,7 @@ function Shell() {
             <span className="brand-mark" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 10h12M2 5h7" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" /></svg>
             </span>
-            {isBank ? 'Кредитный конвейер' : 'Кредитный кабинет'}
+            <span className="brand-text">{isBank ? 'Кредитный конвейер' : 'Кредитный кабинет'}</span>
           </NavLink>
           <nav className="nav" aria-label="Разделы">
             {isBank ? (

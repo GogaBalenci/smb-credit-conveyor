@@ -187,13 +187,22 @@ func match(t Tags, p Profile) ([]string, bool) {
 	return reasons, true
 }
 
-// EventItems превращает события заявок в персональные карточки.
+// В ленту попадают только события, важные клиенту, и по каждой заявке — одно,
+// самое свежее: промежуточные шаги конвейера видны на странице заявки.
+var feedStatuses = map[domain.Status]bool{
+	domain.StatusNeedsInfo: true, domain.StatusManualReview: true, domain.StatusApproved: true,
+	domain.StatusCounterOffer: true, domain.StatusRejected: true, domain.StatusSigned: true, domain.StatusIssued: true,
+}
+
+// EventItems превращает события заявок (от новых к старым) в персональные карточки.
 func EventItems(events []domain.Event, numbers map[string]string) []FeedItem {
 	var out []FeedItem
+	seen := map[string]bool{}
 	for _, e := range events {
-		if e.ActorKind == domain.ActorClient && e.To != domain.StatusSigned {
-			continue // собственные действия клиента не дублируем, кроме подписания
+		if !feedStatuses[e.To] || e.From == e.To || seen[e.ApplicationID] {
+			continue
 		}
+		seen[e.ApplicationID] = true
 		info := e.To.Info()
 		body := info.Description
 		if e.Comment != "" {

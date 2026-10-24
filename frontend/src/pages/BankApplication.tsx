@@ -11,7 +11,8 @@ const ACTORS = { client: 'Клиент', system: 'Система', underwriter: 
 
 export function BankApplication() {
   const { id = '' } = useParams()
-  const { user } = useSession()
+  const { user, meta } = useSession()
+  const statusTitle = (s: string) => meta?.statuses.find((x) => x.status === s)?.title ?? s
   const q = useAsync(() => api.get(id), [id])
   const d = q.data
   usePolling(() => void q.reload(true), !!d && LIVE_STATUSES.includes(d.application.status))
@@ -120,7 +121,7 @@ export function BankApplication() {
             <ol className="timeline">
               {d.events.map((e) => (
                 <li key={e.id}>
-                  <b>{e.from === e.to ? 'Комментарий' : `${e.from ?? '—'} → ${e.to}`}</b>
+                  <b>{e.from === e.to ? 'Комментарий' : e.from ? `${statusTitle(e.from)} → ${statusTitle(e.to)}` : statusTitle(e.to)}</b>
                   <div className="small muted">{ACTORS[e.actor_kind]} · {dateTime(e.created_at)}</div>
                   {e.comment && <div className="small">{e.comment}</div>}
                 </li>
