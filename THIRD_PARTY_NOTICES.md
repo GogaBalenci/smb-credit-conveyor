@@ -41,6 +41,7 @@
 | node:22-alpine | MIT | Сборка фронтенда |
 | nginx:1.27-alpine | BSD-2-Clause | Раздача фронтенда |
 | gcr.io/distroless/static-debian12 | Apache-2.0 | Базовый образ рантайма |
+| caddy:2.8-alpine | Apache-2.0 | Reverse proxy и HTTPS (Let's Encrypt) на сервере, только `docker-compose.prod.yml` |
 
 Swagger UI на `/api/docs` загружается из CDN unpkg (Apache-2.0) только при открытии страницы документации.
 Спецификация доступна и без сети: `backend/api/openapi.yaml`, `/api/openapi.yaml`.
